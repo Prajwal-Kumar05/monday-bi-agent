@@ -9,9 +9,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Health check
+// Home Route
 app.get("/", (req, res) => {
   res.send("Backend is running 🚀");
+});
+
+// Health API
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    monday: !!process.env.MONDAY_API_TOKEN,
+    gemini: !!process.env.GEMINI_API_KEY
+  });
 });
 
 // Fetch Monday board
