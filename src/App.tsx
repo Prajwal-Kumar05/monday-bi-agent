@@ -8,6 +8,7 @@ import { queryGemini } from './services/geminiService';
 import type { ChatMessage } from './services/geminiService';
 import { cleanAndNormalizeData } from './utils/dataProcessor';
 import type { CleanedData } from './utils/dataProcessor';
+import { getBackendStatus } from './services/statusService';
 
 const EXPECTED_DEALS_COLUMNS = [
   'Deal Name',
@@ -81,6 +82,7 @@ console.log("Deals Board:", dealsBoardId);
 console.log("WO Board:", woBoardId);
   // Data State
   const [isMondayConnected, setMondayConnected] = useState(false);
+  const [isGeminiConnected, setGeminiConnected] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [cleanedData, setCleanedData] = useState<CleanedData | null>(null);
@@ -99,16 +101,35 @@ console.log("WO Board:", woBoardId);
  
 
   // Fetch / reload data when credentials or demo mode changes
-  useEffect(() => {
-    if (isDemoMode) {
-      loadData();
-    } else if (mondayToken && dealsBoardId && woBoardId) {
-      loadData();
-    } else {
-      setCleanedData(null);
+useEffect(() => {
+  const initialize = async () => {
+    try {
+      if (isDemoMode) {
+        loadData();
+        return;
+      }
+
+      const status = await getBackendStatus();
+
+      setMondayConnected(status.monday);
+      setGeminiConnected(status.gemini);
+
+      if (status.monday && dealsBoardId && woBoardId) {
+        loadData();
+      } else {
+        setCleanedData(null);
+      }
+
+    } catch (error) {
+      console.error(error);
       setMondayConnected(false);
+      setGeminiConnected(false);
+      setCleanedData(null);
     }
-  }, [apiKey, mondayToken, dealsBoardId, woBoardId, isDemoMode]);
+  };
+
+  initialize();
+}, [dealsBoardId, woBoardId, isDemoMode]);
 
   const loadData = async () => {
     setLoadingData(true);
@@ -233,20 +254,28 @@ console.log("WO Board:", woBoardId);
 
         {/* MONDAY status indicators */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <div className="status-indicator">
-            <span className={`status-light ${isMondayConnected ? 'status-light-success' : 'status-light-danger'}`} />
-            <span>
-              Monday API: {isMondayConnected ? (isDemoMode ? 'Simulated (Demo)' : 'Connected') : 'Disconnected'}
-            </span>
-          </div>
+  <div className="status-indicator">
+    <span
+      className={`status-light ${
+        isMondayConnected ? 'status-light-success' : 'status-light-danger'
+      }`}
+    />
+    <span>
+      Monday API: {isMondayConnected ? (isDemoMode ? 'Simulated (Demo)' : 'Connected') : 'Disconnected'}
+    </span>
+  </div>
 
-          <div className="status-indicator">
-            <span className={`status-light ${apiKey ? 'status-light-success' : 'status-light-warning'}`} />
-            <span>
-              Gemini Engine: {apiKey ? 'Authorized' : 'Key Required'}
-            </span>
-          </div>
-        </div>
+  <div className="status-indicator">
+    <span
+      className={`status-light ${
+        isGeminiConnected ? 'status-light-success' : 'status-light-danger'
+      }`}
+    />
+    <span>
+      Gemini Engine: {isGeminiConnected ? 'Authorized' : 'Disconnected'}
+    </span>
+  </div>
+</div>
 
         {/* Global Loading Spinner */}
         {loadingData && (
