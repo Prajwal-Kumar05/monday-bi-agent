@@ -32,9 +32,7 @@ export const fetchMondayBoard = async (
   try {
     const API_URL = import.meta.env.VITE_API_URL;
 
-const response = await fetch(
-  `${API_URL}/monday/${boardId}`
-);
+const response = await fetch(`${API_URL}/monday/${boardId}`);
 
     console.log("HTTP Status:", response.status);
 
