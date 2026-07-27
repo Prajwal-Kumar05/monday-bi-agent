@@ -30,9 +30,11 @@ export const fetchMondayBoard = async (
   expectedTitles: string[]
 ): Promise<MondayBoardData> => {
   try {
-    const response = await fetch(
-      `http://localhost:5000/monday/${boardId}`
-    );
+    const API_URL = import.meta.env.VITE_API_URL;
+
+const response = await fetch(
+  `${API_URL}/monday/${boardId}`
+);
 
     console.log("HTTP Status:", response.status);
 
