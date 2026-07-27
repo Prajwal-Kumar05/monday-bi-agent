@@ -267,7 +267,6 @@ ${luffyCaveat}`;
 
         const secWos = workOrders.filter(w => w.sector === sec);
         const billed = secWos.reduce((sum, w) => sum + w.billedExclGst, 0);
-        const collected = secWos.reduce((sum, w) => sum + w.collectedInclGst, 0);
         const ar = secWos.reduce((sum, w) => sum + w.amountReceivable, 0);
 
         sectorReportRows += `| ${sec} | ${secDeals.length} | ${fmt(wonVal)} | ${secWos.length} | ${fmt(billed)} | ${fmt(ar)} |\n`;
@@ -301,7 +300,6 @@ ${luffyCaveat}`;
 
     const secWos = workOrders.filter(w => w.sector === 'Renewables');
     const completed = secWos.filter(w => w.executionStatus === 'Completed');
-    const inProgress = secWos.filter(w => w.executionStatus === 'In Progress' || w.executionStatus === 'Ongoing');
     const billedVal = secWos.reduce((sum, w) => sum + w.billedExclGst, 0);
     const receivables = secWos.reduce((sum, w) => sum + w.amountReceivable, 0);
 
