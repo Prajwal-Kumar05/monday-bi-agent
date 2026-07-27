@@ -63,7 +63,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
     setTestingConnection(true);
     setTestResult(null);
     try {
-      const isConnected = await checkMondayConnection(localMondayToken);
+ const isConnected = await checkMondayConnection();
       if (isConnected) {
         setTestResult('success');
         setMondayConnected(true);
