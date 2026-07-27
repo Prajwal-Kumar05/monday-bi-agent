@@ -1,2 +1,7 @@
-node_modules
+# Environment files
 .env
+.env.*
+src/backend/.env
+
+# Temporary files
+tree.txt

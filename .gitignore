@@ -25,3 +25,10 @@ dist-ssr
 
 # Build artifacts & large generated files
 *.zip
+# Environment files
+.env
+.env.*
+src/backend/.env
+
+# Temporary files
+tree.txt

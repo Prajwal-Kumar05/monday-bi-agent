@@ -74,6 +74,11 @@ const mondayToken = import.meta.env.VITE_MONDAY_TOKEN;
 const dealsBoardId = import.meta.env.VITE_DEALS_BOARD_ID;
 const woBoardId = import.meta.env.VITE_WO_BOARD_ID;
 const isDemoMode = import.meta.env.VITE_IS_DEMO_MODE === 'true';
+
+console.log("API Key:", apiKey);
+console.log("Monday Token:", mondayToken);
+console.log("Deals Board:", dealsBoardId);
+console.log("WO Board:", woBoardId);
   // Data State
   const [isMondayConnected, setMondayConnected] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
