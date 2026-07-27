@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Terminal, Database, FileText, CheckCircle2, AlertTriangle, HelpCircle, Loader2 } from 'lucide-react';
-import { ConfigPanel } from './components/ConfigPanel';
 import { ChatInterface } from './components/ChatInterface';
 import { DataDiagnostics } from './components/DataDiagnostics';
 import { LeadershipUpdates } from './components/LeadershipUpdates';
@@ -70,12 +69,11 @@ function App() {
   const [activeTab, setActiveTab] = useState<'chat' | 'diagnostics' | 'leadership'>('chat');
   
   // Credentials config state
-  const [apiKey, setApiKey] = useState('');
-  const [mondayToken, setMondayToken] = useState('');
-  const [dealsBoardId, setDealsBoardId] = useState('');
-  const [woBoardId, setWoBoardId] = useState('');
-  const [isDemoMode, setIsDemoMode] = useState(true); // default to demo mode for instant testing!
-
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+const mondayToken = import.meta.env.VITE_MONDAY_TOKEN;
+const dealsBoardId = import.meta.env.VITE_DEALS_BOARD_ID;
+const woBoardId = import.meta.env.VITE_WO_BOARD_ID;
+const isDemoMode = import.meta.env.VITE_IS_DEMO_MODE === 'true';
   // Data State
   const [isMondayConnected, setMondayConnected] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
@@ -93,29 +91,7 @@ function App() {
   // Leadership State
   const [isReportGenerating, setReportGenerating] = useState(false);
 
-  // Load config on mount
-  useEffect(() => {
-    const savedApiKey = localStorage.getItem('bi_agent_api_key');
-    const savedMondayToken = localStorage.getItem('bi_agent_monday_token');
-    const savedDealsId = localStorage.getItem('bi_agent_deals_id');
-    const savedWoId = localStorage.getItem('bi_agent_wo_id');
-    const savedDemoMode = localStorage.getItem('bi_agent_demo_mode');
-
-    const demo = savedDemoMode === null ? true : savedDemoMode === 'true';
-    setIsDemoMode(demo);
-
-    if (demo) {
-      setApiKey(savedApiKey || 'demo-gemini-key');
-      setMondayToken('demo-monday-token');
-      setDealsBoardId('demo-deals-board');
-      setWoBoardId('demo-wo-board');
-    } else {
-      setApiKey(savedApiKey || '');
-      setMondayToken(savedMondayToken || '');
-      setDealsBoardId(savedDealsId || '');
-      setWoBoardId(savedWoId || '');
-    }
-  }, []);
+ 
 
   // Fetch / reload data when credentials or demo mode changes
   useEffect(() => {
@@ -152,8 +128,8 @@ function App() {
         setMondayConnected(true);
       } else {
         // Query Live Monday.com Board details
-        const dealsBoard = await fetchMondayBoard(mondayToken, dealsBoardId, EXPECTED_DEALS_COLUMNS);
-        const woBoard = await fetchMondayBoard(mondayToken, woBoardId, EXPECTED_WO_COLUMNS);
+      const dealsBoard = await fetchMondayBoard(dealsBoardId,EXPECTED_DEALS_COLUMNS);
+       const woBoard = await fetchMondayBoard( woBoardId,  EXPECTED_WO_COLUMNS);
 
         setDealsMapping(dealsBoard.columnMapping);
         setWoMapping(woBoard.columnMapping);
@@ -176,30 +152,7 @@ function App() {
     } finally {
       setLoadingData(false);
     }
-  };
-
-  const handleSaveConfig = (config: {
-    apiKey: string;
-    mondayToken: string;
-    dealsBoardId: string;
-    woBoardId: string;
-    isDemoMode: boolean;
-  }) => {
-    localStorage.setItem('bi_agent_api_key', config.apiKey);
-    localStorage.setItem('bi_agent_monday_token', config.mondayToken);
-    localStorage.setItem('bi_agent_deals_id', config.dealsBoardId);
-    localStorage.setItem('bi_agent_wo_id', config.woBoardId);
-    localStorage.setItem('bi_agent_demo_mode', String(config.isDemoMode));
-
-    setApiKey(config.apiKey);
-    setMondayToken(config.mondayToken);
-    setDealsBoardId(config.dealsBoardId);
-    setWoBoardId(config.woBoardId);
-    setIsDemoMode(config.isDemoMode);
-    
-    // Clear chat history on configuration change to align context
-    setChatHistory([]);
-  };
+  }
 
   const handleSendMessage = async (text: string) => {
     if (!cleanedData) {
@@ -311,15 +264,7 @@ function App() {
         )}
 
         {/* Credentials Form */}
-        <ConfigPanel
-          apiKey={apiKey}
-          mondayToken={mondayToken}
-          dealsBoardId={dealsBoardId}
-          woBoardId={woBoardId}
-          isDemoMode={isDemoMode}
-          onSaveConfig={handleSaveConfig}
-          setMondayConnected={setMondayConnected}
-        />
+      
         
         {/* Help footer */}
         <div className="glass-panel" style={{ padding: '12px', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
